@@ -4,7 +4,6 @@
 #include <opencv2/opencv.hpp>
 #include <opencv2/highgui/highgui.hpp>
 
-#include "dirent.h"
 #include "train.h"
 
 using namespace std;

@@ -6,7 +6,6 @@
 #include <vector>
 #include <thread>
 
-#include "dirent.h"
 #include "train.h"
 #include "Matcher.h"
 #include "zmq.hpp"
@@ -19,21 +18,14 @@
 #include <sstream>
 #include <mutex>
 
-#ifdef _WIN32
-#include <windows.h>
+typedef unsigned char       BYTE;
 
-void sleep(unsigned milliseconds)
-{
-	Sleep(milliseconds);
-}
-#else
 #include <unistd.h>
 
-void sleep(unsigned milliseconds)
-{
-	usleep(milliseconds * 1000); // takes microseconds
-}
-#endif
+//void sleep(unsigned milliseconds)
+//{
+//	usleep(milliseconds * 1000); // takes microseconds
+//}
 
 using namespace std;
 
@@ -48,9 +40,9 @@ bool THREAD_SAFE = true;
 bool READ_AS_BYTES = true;
 
 
-std::vector<byte> matToBytes(cv::Mat image)
+std::vector<BYTE> matToBytes(cv::Mat image)
 {
-	vector<byte> v_char;
+	vector<BYTE> v_char;
 	for (int i = 0; i < image.rows; i++)
 	{
 		for (int j = 0; j < image.cols; j++)
@@ -104,11 +96,6 @@ void *worker_routine(void *arg, vector<TrainedImage> &trained_images)
 		if(!THREAD_SAFE)
 			mtx.lock();
 		FeaturedImage scene;
-		long int before = GetTickCount();
-		vector<SearchResult> results = get_matches(decodedData, trained_images, scene);
-		long int after = GetTickCount();
-
-		cout << after - before << endl;
 
 		///////////////////
 		std::ostringstream oss;
@@ -122,6 +109,7 @@ void *worker_routine(void *arg, vector<TrainedImage> &trained_images)
 		rapidjson::Value rj_tweet_id(oss.str().c_str(), rj_response.GetAllocator());
 		rj_response.AddMember("tweet_id", rj_tweet_id, allocator);
 
+		vector<SearchResult> results;
 		for (auto sr : results) {
 
 			if (!sr.match())
@@ -217,7 +205,7 @@ int main(int argc, char** argv)
 		// Launch pool of worker threads
 		std::thread t[NUM_THREADS];
 		for (int thread_nbr = 0; thread_nbr != NUM_THREADS; thread_nbr++) {
-			t[thread_nbr] = std::thread(worker_routine, (void *)&context, trained_images);
+			t[thread_nbr] = std::thread(worker_routine, std::ref((void *)&context), trained_images);
 		}
 
 		zmq::proxy(frontend, backend, NULL);
@@ -229,7 +217,6 @@ int main(int argc, char** argv)
 	else
 	{
 		// Get a result
-		long int before = GetTickCount();
 		vector<SearchResult> results;
 		if (!READ_AS_BYTES)
 		{
@@ -257,10 +244,6 @@ int main(int argc, char** argv)
 			std::cout << "Getting as a vector" << endl;
 			results = get_matches(vec, trained_images, scene);
 		}
-		long int after = GetTickCount();
-
-		//std::cout << after - before << endl;
-
 		for (auto sr : results) {
 			std::cout << sr.matching_image.path << endl;
 

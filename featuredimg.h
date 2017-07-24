@@ -6,9 +6,8 @@
 #include <opencv2/opencv.hpp>
 #include <opencv2/highgui/highgui.hpp>
 
-#include "dirent.h"
-
 using namespace std;
+typedef unsigned char       BYTE;
 
 class FeaturedImage {
 
