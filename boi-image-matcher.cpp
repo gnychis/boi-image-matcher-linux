@@ -18,8 +18,8 @@
 #include <sstream>
 #include <mutex>
 
-typedef unsigned char       BYTE;
-
+#include <stdint.h>
+typedef uint8_t           BYTE;
 #include <unistd.h>
 
 //void sleep(unsigned milliseconds)
@@ -205,7 +205,7 @@ int main(int argc, char** argv)
 		// Launch pool of worker threads
 		std::thread t[NUM_THREADS];
 		for (int thread_nbr = 0; thread_nbr != NUM_THREADS; thread_nbr++) {
-			t[thread_nbr] = std::thread(worker_routine, std::ref((void *)&context), trained_images);
+			t[thread_nbr] = std::thread(worker_routine, &context, std::ref(trained_images));
 		}
 
 		zmq::proxy(frontend, backend, NULL);
