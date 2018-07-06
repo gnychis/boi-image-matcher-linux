@@ -25,26 +25,13 @@ vector<TrainedImage> load_training_images(string training_dir) {
   }
 
   for(auto f : files) {
-    cout << "File: " << f << endl;
+    cout << "File: " << (training_dir + "/" + f) << endl;
+	  string img_path(f);
+	  if (img_path.compare(".") == 0 || img_path.compare("..") == 0)
+	  	continue;
 
+	  trained_images.push_back(TrainedImage(training_dir + img_path));
   } 
-
-	//	/* print all the files and directories within directory */
-	//	while ((ent = readdir(dir)) != NULL) {
-
-	//		string img_path(ent->d_name);
-	//		if (img_path.compare(".") == 0 || img_path.compare("..") == 0)
-	//			continue;
-
-	//		trained_images.push_back(TrainedImage(training_dir + img_path));
-	//	}
-	//	closedir(dir);
-	//}
-	//else {
-	//	/* could not open directory */
-	//	perror("");
-	//	throw;
-	//}
 
 	return trained_images;
 }

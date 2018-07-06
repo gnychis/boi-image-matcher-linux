@@ -29,7 +29,7 @@ typedef uint8_t           BYTE;
 
 using namespace std;
 
-#define TRAINING_IMAGES "C:\\Users\\gnychis\\Documents\\Notebooks\\Computer Vision\\boi-training\\"
+#define TRAINING_IMAGES "/home/gnychis/data/boi-training"
 
 static const int NUM_THREADS = 4;
 
