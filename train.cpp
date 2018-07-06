@@ -32,7 +32,5 @@ vector<TrainedImage> load_training_images(string training_dir) {
 	  trained_images.push_back(TrainedImage(training_dir + "/" + img_path));
   } 
 
-  cout << "done" << std::endl;
-
 	return trained_images;
 }

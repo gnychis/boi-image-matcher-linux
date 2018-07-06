@@ -96,7 +96,8 @@ void *worker_routine(void *arg, vector<TrainedImage> &trained_images)
 		if(!THREAD_SAFE)
 			mtx.lock();
 		FeaturedImage scene;
-
+		vector<SearchResult> results = get_matches(decodedData, trained_images, scene);
+		
 		///////////////////
 		std::ostringstream oss;
 		oss << tweet_id;
@@ -109,7 +110,6 @@ void *worker_routine(void *arg, vector<TrainedImage> &trained_images)
 		rapidjson::Value rj_tweet_id(oss.str().c_str(), rj_response.GetAllocator());
 		rj_response.AddMember("tweet_id", rj_tweet_id, allocator);
 
-		vector<SearchResult> results;
 		for (auto sr : results) {
 
 			if (!sr.match())
