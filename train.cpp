@@ -25,13 +25,14 @@ vector<TrainedImage> load_training_images(string training_dir) {
   }
 
   for(auto f : files) {
-    cout << "File: " << (training_dir + "/" + f) << endl;
 	  string img_path(f);
 	  if (img_path.compare(".") == 0 || img_path.compare("..") == 0)
 	  	continue;
 
-	  trained_images.push_back(TrainedImage(training_dir + img_path));
+	  trained_images.push_back(TrainedImage(training_dir + "/" + img_path));
   } 
+
+  cout << "done" << std::endl;
 
 	return trained_images;
 }
