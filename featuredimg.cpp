@@ -32,11 +32,28 @@ void FeaturedImage::feature(std::vector<BYTE> &img_data, bool release_gpu_descri
 
 void FeaturedImage::feature(string path, bool release_gpu_descriptors, int edge_threshold) {
 	this->path = path;
-	imread(this->path, CV_LOAD_IMAGE_GRAYSCALE).copyTo(this->image);
+	imread(this->path).copyTo(this->image);
 	this->compute_features(release_gpu_descriptors, edge_threshold);
 }
 
 void FeaturedImage::compute_features(bool release_gpu_descriptors, int edge_threshold) {
+
+  cv::UMat hsv_image, mask, frame_threshold, rgb_image;
+  cv::cvtColor(this->image, hsv_image, cv::COLOR_BGR2HSV);
+  cv::inRange(hsv_image, Scalar(0,255,40), Scalar(0,255,255), frame_threshold);
+
+  for(int j=0; j<hsv_image.rows; j++)
+  {
+    for(int i=0; i<hsv_image.cols; i++)
+    {
+      if(frame_threshold.getMat(ACCESS_READ).at<uchar>(j,i) == 255) {
+        hsv_image.getMat(ACCESS_WRITE).at<Vec3b>(j,i)[0] = 80;
+      }
+    }
+  }
+
+  cv::cvtColor(hsv_image, rgb_image, cv::COLOR_HSV2RGB);
+  cv::cvtColor(rgb_image, this->image, cv::COLOR_RGB2GRAY); 
 	GaussianBlur(this->image, this->image, Size(3, 3), 0);
 
 	this->gpu_image.upload(this->image);
