@@ -33,27 +33,37 @@ void FeaturedImage::feature(std::vector<BYTE> &img_data, bool release_gpu_descri
 void FeaturedImage::feature(string path, bool release_gpu_descriptors, int edge_threshold) {
 	this->path = path;
 	imread(this->path).copyTo(this->image);
-	this->compute_features(release_gpu_descriptors, edge_threshold);
+	this->compute_features(release_gpu_descriptors, edge_threshold, 255, 1);
 }
 
-void FeaturedImage::compute_features(bool release_gpu_descriptors, int edge_threshold) {
+void FeaturedImage::compute_features(bool release_gpu_descriptors, int edge_threshold, int mask_val, int replace) {
   
   cv::Mat hsv_image, mask, frame_threshold, rgb_image;
+  imwrite("test-orig.jpg", this->image);
   cv::cvtColor(this->image, hsv_image, cv::COLOR_BGR2HSV);
-  cv::inRange(hsv_image, Scalar(0,255,40), Scalar(0,255,255), frame_threshold);
+  cv::inRange(hsv_image, Scalar(0,255,255), Scalar(0,255,255), frame_threshold);
 
-  for(int j=0; j<hsv_image.rows; j++)
+  if(replace)
   {
-    for(int i=0; i<hsv_image.cols; i++)
+    for(int j=0; j<hsv_image.rows; j++)
     {
-      if(frame_threshold.at<uchar>(j,i) == 255) {
-        hsv_image.at<Vec3b>(j,i)[0] = 80;
+      for(int i=0; i<hsv_image.cols; i++)
+      {
+        if(frame_threshold.at<uchar>(j,i) == mask_val) {
+          hsv_image.at<Vec3b>(j,i)[0] = 50;
+        }
       }
     }
   }
+  imwrite("test-hsv.jpg", hsv_image);
 
   cv::cvtColor(hsv_image, rgb_image, cv::COLOR_HSV2RGB);
+  imwrite("test-rgb.jpg", rgb_image);
+  //imwrite("test.jpg", rgb_image);
   cv::cvtColor(rgb_image, this->image, cv::COLOR_RGB2GRAY); 
+  imwrite("test-gray.jpg", this->image);
+  //imwrite("test.jpg", rgb_image);
+
 	GaussianBlur(this->image, this->image, Size(3, 3), 0);
 
 	this->gpu_image.upload(this->image);

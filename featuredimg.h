@@ -28,5 +28,5 @@ public:
 	void feature(string path, bool release_gpu_descriptors = true, int edge_threshold = 32);
 
 private:
-	void compute_features(bool release_gpu_descriptors, int edge_threshold);
+	void compute_features(bool release_gpu_descriptors, int edge_threshold, int mask_val = 255, int replace=0);
 };
