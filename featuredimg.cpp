@@ -26,7 +26,7 @@ FeaturedImage::FeaturedImage(string path, bool release_gpu_descriptors, int edge
 }
 
 void FeaturedImage::feature(std::vector<BYTE> &img_data, bool release_gpu_descriptors, int edge_threshold) {
-	imdecode(img_data, CV_LOAD_IMAGE_GRAYSCALE).copyTo(this->image);
+	imdecode(img_data, CV_LOAD_IMAGE_COLOR).copyTo(this->image);
 	this->compute_features(release_gpu_descriptors, edge_threshold);
 }
 
@@ -37,8 +37,8 @@ void FeaturedImage::feature(string path, bool release_gpu_descriptors, int edge_
 }
 
 void FeaturedImage::compute_features(bool release_gpu_descriptors, int edge_threshold) {
-
-  cv::UMat hsv_image, mask, frame_threshold, rgb_image;
+  
+  cv::Mat hsv_image, mask, frame_threshold, rgb_image;
   cv::cvtColor(this->image, hsv_image, cv::COLOR_BGR2HSV);
   cv::inRange(hsv_image, Scalar(0,255,40), Scalar(0,255,255), frame_threshold);
 
@@ -46,8 +46,8 @@ void FeaturedImage::compute_features(bool release_gpu_descriptors, int edge_thre
   {
     for(int i=0; i<hsv_image.cols; i++)
     {
-      if(frame_threshold.getMat(ACCESS_READ).at<uchar>(j,i) == 255) {
-        hsv_image.getMat(ACCESS_WRITE).at<Vec3b>(j,i)[0] = 80;
+      if(frame_threshold.at<uchar>(j,i) == 255) {
+        hsv_image.at<Vec3b>(j,i)[0] = 80;
       }
     }
   }
